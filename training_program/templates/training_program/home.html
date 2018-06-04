@@ -1,4 +1,4 @@
-{% extends base_template_name %}
+{% extends 'training_program/base.html' %}
 {% load staticfiles %}
 
 {% block main %}
@@ -20,40 +20,30 @@
 
 </style>
 
-    {{ block.super }}
+{{ block.super }}
 
 <div class="container bg-3 text-center">
-	<h3 class="text text-muted">Start by locating and confirming a plot.</h3>
-		<h3>
-			<a href="{% url plot_dashboard_listboard_url_name %}" class="btn btn-default btn-lg"><i class="fa fa-building fa-lg"></i> Plots</a>
-		</h3>
 
-
+    <p class="h4">
+      <a href="{% url screening_listboard_url %}" class="btn btn-default btn-lg"><i class="fa fa-user-plus fa-lg"></i> Screening</a>
+    </p> 
+    <p class="h4">
+      <a href="{% url subject_listboard_url %}" class="btn btn-default btn-lg"><i class="fa fa-user-circle fa-lg"></i> Subjects</a>
+    </p> 
+    <p class="h4">
+      <a href="{% url 'ambition_ae:home_url' %}" class="btn btn-default btn-lg"><i class="fa fa-heartbeat fa-lg"></i> Adverse Events</a>
+    </p> 
+    <p class="h4">
+      <a href="{% url 'edc_action_item:home_url' %}" class="btn btn-default btn-lg"><i class="fa fa-bolt fa-lg"></i> Action Items</a>
+    </p> 
+    <p class="h4">
+      <a href="{% url 'edc_sync:home_url' %}" class="btn btn-default btn-lg"><i class="fa fa-exchange-alt fa-lg"></i> Synchronization</a>
+    </p> 
 </div>
 <div class="container bg-3 text-center">
-<h3 class="text text-muted">Next is enumeration and participation</h3>
-<h3>
-	<a href="{% url enumeration_listboard_url_name %}" class="btn btn-default btn-lg">
-	   <i class="fa fa-sitemap fa-lg"></i> Household</a>
-	<a data-toggle="modal" data-target="#anonymousModal" href="#" class="btn btn-default btn-lg {% if not ANONYMOUS_ENABLED %}disabled{% endif %}">
-	   <i class="fa fa-user-secret fa-lg"></i> Anonymous</a>		
-</h3>
-
-</div>
-
-<div class="container bg-3 text-center">
-<h3 class="text text-muted">Jump straight to a member or participant ...</h3>
-	<h3>
-	<a href="{% url member_dashboard_listboard_url_name %}" class="btn btn-default btn-lg"><i class="fa fa-group fa-lg"></i> Members</a>
-	<a href="{% url bcpp_subject_dashboard_listboard_url_name %}" class="btn btn-default btn-lg"><i class="fa fa-user-circle-o fa-lg"></i> Subject</a>
-	</h3>
-</div>
-
-<div class="container bg-3 text-center">
-<h3 class="text text-muted">Transfer data to the server...</h3>
-	<h3>
-	<a href="{% url 'edc_sync:home_url' %}" class="btn btn-default btn-lg"><i class="fa fa-exchange fa-lg"></i> Synchronization</a>
-	</h3>
+    <p class="h4">
+      <a href="/switch_sites/" class="btn btn-default btn-md">Switch Sites</a>
+    </p> 
 </div>
 
 

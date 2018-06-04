@@ -1,35 +1,84 @@
-import configparser
 from datetime import datetime
-import os
+from dateutil.relativedelta import MO, TU, WE, TH, FR, SA, SU
+from dateutil.tz import gettz
 from django.apps import AppConfig as DjangoAppConfig
-from django.conf import settings
+from django.apps import apps as django_apps
+from django.core.checks import register
 from django.core.management.color import color_style
-from edc_device import DevicePermissions, DeviceAddPermission, DeviceChangePermission
+from django.db.models.signals import post_migrate
+from edc_appointment.appointment_config import AppointmentConfig
+from edc_appointment.apps import AppConfig as BaseEdcAppointmentAppConfig
+from edc_base.apps import AppConfig as BaseEdcBaseAppConfig
+from edc_constants.constants import FAILED_ELIGIBILITY
 from edc_device.apps import AppConfig as BaseEdcDeviceAppConfig
-from edc_device.constants import CENTRAL_SERVER, CLIENT, NODE_SERVER
+from edc_device.constants import CENTRAL_SERVER
+from edc_facility.apps import AppConfig as BaseEdcFacilityAppConfig
+from edc_identifier.apps import AppConfig as BaseEdcIdentifierAppConfig
+from edc_lab.apps import AppConfig as BaseEdcLabAppConfig
+from edc_metadata.apps import AppConfig as BaseEdcMetadataAppConfig
+from edc_protocol.apps import AppConfig as BaseEdcProtocolAppConfig
+from edc_visit_tracking.apps import AppConfig as BaseEdcVisitTrackingAppConfig
+from edc_visit_tracking.constants import SCHEDULED, UNSCHEDULED, LOST_VISIT
 
-
-config = configparser.RawConfigParser()
-config.read(os.path.join(settings.ETC_DIR,
-                         settings.APP_NAME,
-                         settings.CONFIG_FILE))
-
+style = color_style()
 
 class AppConfig(DjangoAppConfig):
     name = 'training_program'
-    base_template_name = 'training_program/base.html'
-    dashboard_url_name = 'home_url'
-    listboard_url_name = 'home_url'
+
+
+class EdcProtocolAppConfig(BaseEdcProtocolAppConfig):
+    protocol = 'BHP092'
+    protocol_name = 'Training'
+    protocol_number = '092'
+    protocol_title = ''
+    study_open_datetime = datetime(
+        2016, 12, 31, 0, 0, 0, tzinfo=gettz('UTC'))
+    study_close_datetime = datetime(
+        2019, 12, 31, 23, 59, 59, tzinfo=gettz('UTC'))
+
+
+class EdcLabAppConfig(BaseEdcLabAppConfig):
+    requisition_model = 'tp_subject.subjectrequisition'
+    result_model = 'edc_lab.result'
+
+
+class EdcBaseAppConfig(BaseEdcBaseAppConfig):
+    project_name = 'Tarining Program'
+    institution = 'Botswana-Harvard AIDS Institute'
 
 
 class EdcDeviceAppConfig(BaseEdcDeviceAppConfig):
-    use_settings = True
-    device_id = settings.DEVICE_ID
-    device_role = settings.DEVICE_ROLE
-    device_permissions = DevicePermissions(
-        DeviceAddPermission(
-            model='plot.plot',
-            device_roles=[CENTRAL_SERVER, CLIENT]),
-        DeviceChangePermission(
-            model='plot.plot',
-            device_roles=[NODE_SERVER, CENTRAL_SERVER, CLIENT]))
+    device_role = CENTRAL_SERVER
+    device_id = '99'
+
+
+class EdcVisitTrackingAppConfig(BaseEdcVisitTrackingAppConfig):
+    visit_models = {
+        'tp_subject': ('subject_visit', 'tp_subject.subjectvisit')}
+
+
+class EdcIdentifierAppConfig(BaseEdcIdentifierAppConfig):
+    identifier_prefix = '092'
+
+
+class EdcMetadataAppConfig(BaseEdcMetadataAppConfig):
+    reason_field = {'tp_subject.subjectvisit': 'reason'}
+    create_on_reasons = [SCHEDULED, UNSCHEDULED]
+    delete_on_reasons = [LOST_VISIT, FAILED_ELIGIBILITY]
+
+
+class EdcAppointmentAppConfig(BaseEdcAppointmentAppConfig):
+    configurations = [
+        AppointmentConfig(
+            model='edc_appointment.appointment',
+            related_visit_model='tp_subject.subjectvisit',
+            appt_type='hospital')]
+
+
+class EdcFacilityAppConfig(BaseEdcFacilityAppConfig):
+    country = 'botswana'
+    definitions = {
+        '7-day clinic': dict(days=[MO, TU, WE, TH, FR, SA, SU],
+                             slots=[100, 100, 100, 100, 100, 100, 100]),
+        '5-day clinic': dict(days=[MO, TU, WE, TH, FR],
+                             slots=[100, 100, 100, 100, 100])}

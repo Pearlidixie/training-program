@@ -43,7 +43,7 @@ class EdcLabAppConfig(BaseEdcLabAppConfig):
 
 
 class EdcBaseAppConfig(BaseEdcBaseAppConfig):
-    project_name = 'Tarining Program'
+    project_name = 'Training Program'
     institution = 'Botswana-Harvard AIDS Institute'
 
 

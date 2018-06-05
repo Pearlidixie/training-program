@@ -1,5 +1,5 @@
 import os
-
+import sys
 from pathlib import Path
 
 DEBUG = True
@@ -188,6 +188,7 @@ SHORT_DATETIME_FORMAT = 'd/m/Y H:i'
 
 # static
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, APP_NAME, 'static')
 
 # edc app specific settings  ################
 
@@ -227,3 +228,18 @@ COUNTRY = 'botswana'
 GIT_DIR = BASE_DIR
 #KEY_PATH = os.path.join(BASE_DIR, 'crypto_fields')
 EXPORT_FOLDER = os.path.expanduser('~/')
+
+if 'test' in sys.argv:
+
+    class DisableMigrations:
+
+        def __contains__(self, item):
+            return True
+
+        def __getitem__(self, item):
+            return None
+
+    MIGRATION_MODULES = DisableMigrations()
+    PASSWORD_HASHERS = ('django.contrib.auth.hashers.MD5PasswordHasher', )
+    DEFAULT_FILE_STORAGE = 'inmemorystorage.InMemoryStorage'
+
